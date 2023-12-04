@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ ... }: 
+{
   
     home.file = {
       ".config/bspwm/bspwmrc" = { 
