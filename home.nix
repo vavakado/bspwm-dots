@@ -1,18 +1,6 @@
-{ config, pkgs, fetchgit, ... }:
-let
-  inherit pkgs;
-  tmux-nova = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "nova";
-    name = "tmux-noova";
-    version = "latest";
-    src = pkgs.fetchgit {
-      url = "https://github.com/o0th/tmux-nova.git";
-      rev = "7103fd78fec47c74e9a431c50e9543d0486d5201";
-      sha256 = "sha256-1A7pnMMOwp1K7+WAAKbTqrMpm/wcorui6TQDHm8Xzd8=";
-    };
-  };
-in
+{ config, pkgs, ... }:
 {
+  imports = [ ./dotfiles/tmux.nix ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "vavakado";
@@ -29,24 +17,7 @@ in
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
-
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
-  ];
+  home.packages = [  ];
   programs.lazygit.enable = true;
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -81,135 +52,135 @@ in
  
     ".config/sxhkd/sxhkdrc" = {
       text = ''
-        #
-        # wm independent hotkeys
-        #
+#
+# wm independent hotkeys
+#
 
-        # terminal emulator
-        super + Return
-        	alacritty
+# terminal emulator
+super + Return
+	alacritty
 
-        # program launcher
-        super + d
-        	rofi -show drun
-        super + shift + d
-        	rofi -show run
-	
-        # make sxhkd reload its configuration files:
-        super + Escape
-        	pkill -USR1 -x sxhkd
+# program launcher
+super + d
+	rofi -show drun
+super + shift + d
+	rofi -show run
 
-        #
-        # bspwm hotkeys
-        #
+# make sxhkd reload its configuration files:
+super + Escape
+	pkill -USR1 -x sxhkd
 
-        # quit/restart bspwm
-        super + alt + {q,r}
-        	bspc {quit,wm -r}
+#
+# bspwm hotkeys
+#
 
-        # close and kill
-        super + {_,shift + }q
-        	bspc node -{c,k}
+# quit/restart bspwm
+super + alt + {q,r}
+	bspc {quit,wm -r}
 
-        # alternate between the tiled and monocle layout
-        super + m
-        	bspc desktop -l next
+# close and kill
+super + {_,shift + }q
+	bspc node -{c,k}
 
-        # send the newest marked node to the newest preselected node
-        super + y
-        	bspc node newest.marked.local -n newest.!automatic.local
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
 
-        # swap the current node and the biggest window
-        super + g
-        	bspc node -s biggest.window
+# send the newest marked node to the newest preselected node
+super + y
+	bspc node newest.marked.local -n newest.!automatic.local
 
-        #
-        # state/flags
-        #
+# swap the current node and the biggest window
+super + g
+	bspc node -s biggest.window
 
-        # set the window state
-        super + {t,shift + t,s,f}
-        	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+#
+# state/flags
+#
 
-        # set the node flags
-        super + ctrl + {m,x,y,z}
-        	bspc node -g {marked,locked,sticky,private}
+# set the window state
+super + {t,shift + t,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-        #
-        # focus/swap
-        #
+# set the node flags
+super + ctrl + {m,x,y,z}
+	bspc node -g {marked,locked,sticky,private}
 
-        # focus the node in the given direction
-        super + {_,shift + }{h,j,k,l}
-        	bspc node -{f,s} {west,south,north,east}
+#
+# focus/swap
+#
 
-        # focus the node for the given path jump
-        super + {p,b,comma,period}
-        	bspc node -f @{parent,brother,first,second}
+# focus the node in the given direction
+super + {_,shift + }{h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
 
-        # focus the next/previous window in the current desktop
-        super + {_,shift + }c
-        	bspc node -f {next,prev}.local.!hidden.window
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
 
-        # focus the next/previous desktop in the current monitor
-        super + bracket{left,right}
-        	bspc desktop -f {prev,next}.local
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+	bspc node -f {next,prev}.local.!hidden.window
 
-        # focus the last node/desktop
-        super + {grave,Tab}
-        	bspc {node,desktop} -f last
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
 
-        # focus the older or newer node in the focus history
-        super + {o,i}
-        	bspc wm -h off; \
-        	bspc node {older,newer} -f; \
-        	bspc wm -h on
+# focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
 
-        # focus or send to the given desktop
-        super + {_,shift + }{1-9,0}
-        	bspc {desktop -f,node -d} '^{1-9,10}'
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
 
-        #
-        # preselect
-        #
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
 
-        # preselect the direction
-        super + ctrl + {h,j,k,l}
-        	bspc node -p {west,south,north,east}
+#
+# preselect
+#
 
-        # preselect the ratio
-        super + ctrl + {1-9}
-        	bspc node -o 0.{1-9}
+# preselect the direction
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
 
-        # cancel the preselection for the focused node
-        super + ctrl + space
-        	bspc node -p cancel
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
 
-        # cancel the preselection for the focused desktop
-        super + ctrl + shift + space
-        	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
 
-        #
-        # move/resize
-        #
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-        # expand a window by moving one of its side outward
-        super + alt + {h,j,k,l}
-        	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+#
+# move/resize
+#
 
-        # contract a window by moving one of its side inward
-        super + alt + shift + {h,j,k,l}
-        	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+# expand a window by moving one of its side outward
+super + alt + {h,j,k,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
-        # move a floating window
-        super + {Left,Down,Up,Right}
-        	bspc node -v {-20 0,0 20,0 -20,20 0}
+# contract a window by moving one of its side inward
+super + alt + shift + {h,j,k,l}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
 
-        XF86MonBrightnessUp
-        	brightnessctl s +5%
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}
 
-        XF86MonBrightnessDown
-        	brightnessctl s 5%-
+XF86MonBrightnessUp
+	brightnessctl s +5%
+
+XF86MonBrightnessDown
+	brightnessctl s 5%-
       '';
       executable = true;
     };
@@ -444,75 +415,6 @@ in
     '';
     
   };
-  programs.tmux.enable = true;
-  programs.tmux.prefix = "C-Space";
-  programs.tmux.extraConfig = ''
-    set -ga terminal-overrides ",screen-256color*:Tc"
-    set-option -g default-terminal "screen-256color"
-    set -s escape-time 0
-
-    # Copy mode on mouse scroll
-    set -g mouse on
-    setw -g mode-keys vi
-    set -sg escape-time 0
-
-    set -g base-index 1
-    set -g pane-base-index 1
-    set-window-option -g pane-base-index 1
-    set-option -g renumber-windows on
-
-    # start with window 1 (instead of 0)
-    set -g base-index 1
-
-    # start with pane 1
-    set -g pane-base-index 1
-
-    bind '"' split-window -v -c "#{pane_current_path}"
-    bind % split-window -h -c "#{pane_current_path}"
-
-    # remap prefix to ctrl-space
-    unbind C-b
-    set -g prefix C-Space
-    bind C-Space send-prefix
-
-    # switch windows alt+number
-    bind-key -n M-1 select-window -t 1
-    bind-key -n M-2 select-window -t 2
-    bind-key -n M-3 select-window -t 3
-    bind-key -n M-4 select-window -t 4
-    bind-key -n M-5 select-window -t 5
-    bind-key -n M-6 select-window -t 6
-    bind-key -n M-7 select-window -t 7
-    bind-key -n M-8 select-window -t 8
-    bind-key -n M-9 select-window -t 9
-
-    bind-key -n M-n new-window
-    bind-key -n M-x kill-window
-
-    # moving between panes
-    bind h select-pane -L
-    bind j select-pane -D
-    bind k select-pane -U
-    bind l select-pane -R
-  '';
-
-  programs.tmux.plugins = [
-    {
-      plugin = tmux-nova;
-      extraConfig = ''
-        set -g @nova-nerdfonts true
-        set -g @nova-segment-mode "#{?client_prefix,cmd,π}"
-        set -g @nova-segment-mode-colors "#98bb6c #1f1f28"
-        set -g @nova-status-style-bg "#1f1f28"
-        set -g @nova-status-style-fg "#c0caf5"
-        set -g @nova-status-style-active-bg "#7e9cd8"
-        set -g @nova-status-style-active-fg "#1f1f28"
-        set -g @nova-pane "[#I#{?pane_in_mode, #{pane_mode},}] #W"
-        set -g @nova-rows 0
-        set -g @nova-segments-0-left "mode"
-      '';
-    }
-  ];
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. If you don't want to manage your shell through Home
   # Manager then you have to manually source 'hm-session-vars.sh' located at
