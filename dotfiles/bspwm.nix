@@ -11,6 +11,7 @@
           pipewire &
           picom --config ~/.config/picom/picom.sample.conf &
           ~/.config/polybar/launch.sh &
+          setxkbmap -layout "us,ru" -option 'grp:win_space_toggle'
 
           bspc monitor -d I II III IV V VI
 
